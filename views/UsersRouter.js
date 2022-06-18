@@ -11,6 +11,9 @@ const isAdmin = require("../middlewares/isAdmin");
 router.get('/', isAdmin, UsersController.getUsers);
 router.post('/register', UsersController.postUser);
 router.post('/login', UsersController.loginUser);
+router.post('/getByName', isAdmin, UsersController.getUserByName);
+router.post('/getByEmail', isAdmin, UsersController.getUserByEmail);
+router.get('/myAccount', auth, UsersController.getLoggedUser);
 
 //Export
 module.exports = router;
