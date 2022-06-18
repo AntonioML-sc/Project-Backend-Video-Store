@@ -8,7 +8,11 @@ const auth = require("../middlewares/auth");
 const isAdmin = require("../middlewares/isAdmin");
 
 //Endpoint-function links
-router.get('/', OrdersController.getOrders);
+router.get('/', isAdmin, OrdersController.getOrders);
+router.get('/userOrders', auth, OrdersController.getUserOrders);
+router.post('/register', auth, OrdersController.postOrder);
+router.delete('/delete', isAdmin, OrdersController.deleteOrder);
+router.put('/update/:id', isAdmin, OrdersController.updateOrder);
 
 //Export
 module.exports = router;
