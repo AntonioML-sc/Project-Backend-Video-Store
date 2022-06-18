@@ -3,9 +3,10 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Films', {
       id: {
-        allowNull: false,
+        type: Sequelize.UUID,
         primaryKey: true,
-        type: Sequelize.UUID
+        allowNull: false,
+        defaultValue: Sequelize.UUIDV4,
       },
       title: {
         type: Sequelize.STRING
@@ -27,6 +28,9 @@ module.exports = {
       },
       synopsis: {
         type: Sequelize.TEXT
+      },
+      minAge: {
+        type: Sequelize.INTEGER
       },
       image: {
         type: Sequelize.STRING

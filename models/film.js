@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Film.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false,
+    },
     title: DataTypes.STRING,
     year: DataTypes.INTEGER,
     genre: DataTypes.STRING,
@@ -24,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     duration: DataTypes.INTEGER,
     price: DataTypes.INTEGER,
     synopsis: DataTypes.TEXT,
+    minAge: DataTypes.INTEGER,
     image: DataTypes.STRING
   }, {
     sequelize,
