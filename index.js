@@ -7,7 +7,7 @@ const port = 3000;
 
 const db = require('./db/db');
 
-// const router = require('./router');
+const router = require('./router');
 
 const cors = require('cors');
 
@@ -26,7 +26,7 @@ app.use(express.json());
 
 app.use(cors(corsOptions));
 
-// app.use(router);
+app.use(router);
 
 // db conexion
 
