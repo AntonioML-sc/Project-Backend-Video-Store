@@ -14,6 +14,9 @@ router.post('/login', UsersController.loginUser);
 router.post('/getByName', isAdmin, UsersController.getUserByName);
 router.post('/getByEmail', isAdmin, UsersController.getUserByEmail);
 router.get('/myAccount', auth, UsersController.getLoggedUser);
+router.delete('/delete', isAdmin, UsersController.deleteUser);
+router.put('/update/:id', isAdmin, UsersController.updateUser);
+router.put('/editMyAccount', auth, UsersController.updateLoggedUser);
 
 //Export
 module.exports = router;

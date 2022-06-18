@@ -169,6 +169,83 @@ UsersController.getLoggedUser = async (req, res) => {
     }
 }
 
+UsersController.deleteUser = async (req, res) => {
+
+    let userId = req.body.id;
+
+    try {
+        await User.destroy({
+            where: {
+                id: userId
+            }
+        }).then(count => {
+            if (!count) {
+                return res.status(404).send({ error: 'No not found' });
+            }
+            res.send("user deleted");
+        }).catch((err) => {
+            console.log(err);
+        });
+    } catch (error) {
+        res.send(error);
+    }
+}
+
+UsersController.updateUser = async (req, res) => {
+    // admin only
+    let userId = req.params.id;
+
+    let body = {
+        name: req.body.name,
+        password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+        phone: req.body.phone,
+        email: req.body.email,
+        address: req.body.address
+    };
+
+    try {
+        await User.update(body, {
+            where: { id: userId }
+        }).then((elem) => {
+            res.send(`The user with id ${userId} has been edited`);
+        }).catch(err => {
+            console.log(err);
+        });
+    } catch (error) {
+        res.send(error);
+    }
+}
+
+UsersController.updateLoggedUser = async (req, res) => {
+    // logged user
+    // pick the token
+    let token = req.headers.authorization.split(' ')[1];
+    // pick the user logged
+    let { user } = jwt.decode(token, authConfig.secret);
+
+    let userId = user.id;
+
+    // Changing name and id and is not allowed
+    let body = {
+        password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+        phone: req.body.phone,
+        email: req.body.email,
+        address: req.body.address
+    };
+
+    try {
+        await User.update(body, {
+            where: { id: userId }
+        }).then((elem) => {
+            res.send(`${user.name}, you have modified your account successfully`);
+        }).catch(err => {
+            console.log(err);
+        });
+    } catch (error) {
+        res.send(error);
+    }
+}
+
 
 //Export
 module.exports = UsersController;
