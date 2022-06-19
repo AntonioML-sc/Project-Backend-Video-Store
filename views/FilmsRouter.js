@@ -14,9 +14,9 @@ router.get('/getByGenre/:genre1/:genre2/:genre3', FilmsController.getByGenre);
 router.get('/getById', isAdmin, FilmsController.getById);
 router.get('/getByTitle/:title', FilmsController.getByTitle);
 router.get('/getByDirector/:director', FilmsController.getByDirector);
-router.post('/register', isAdmin, FilmsController.postFilm);
+router.post('/register', isAdmin, FilmsController.registerFilm);
 router.delete('/delete', isAdmin, FilmsController.deleteFilm);
-router.put('/update/:id', isAdmin, FilmsController.updateFilm);
+router.put('/update', isAdmin, FilmsController.updateFilm);
 
 //Export
 module.exports = router;

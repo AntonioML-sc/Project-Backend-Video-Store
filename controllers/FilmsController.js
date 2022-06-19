@@ -9,7 +9,12 @@ const FilmsController = {};
 
 FilmsController.getFilms = async (req, res) => {
     try {
-        await Film.findAll()
+        await Film.findAll({
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            },
+            order: [['year', 'DESC'], ['title']]
+        })
             .then(data => {
                 res.send(data);
             }).catch((error) => {
@@ -102,7 +107,7 @@ FilmsController.getByDirector = async (req, res) => {
     }
 }
 
-FilmsController.postFilm = async (req, res) => {
+FilmsController.registerFilm = async (req, res) => {
 
     let title = req.body.title;
     let year = req.body.year;
@@ -114,23 +119,34 @@ FilmsController.postFilm = async (req, res) => {
     let synopsis = req.body.synopsis;
     let image = req.body.image;
 
-    Film.create({
-        title: title,
-        year: year,
-        genre: genre,
-        price: price,
-        duration: duration,
-        director: director,
-        minAge: minAge,
-        synopsis: synopsis,
-        image: image
-    }).then(film => {
-        console.log(film);
-        res.send(`${film.title}, you have been added succesfully`);
-
-    }).catch((error) => {
+    try {
+        await Film.findOrCreate({
+            where: {
+                title: title
+            },
+            defaults: {
+                    year: year,
+                    genre: genre,
+                    price: price,
+                    duration: duration,
+                    director: director,
+                    minAge: minAge,
+                    synopsis: synopsis,
+                    image: image                
+            }            
+        }).then(([film, created]) => {
+            console.log(film, created);
+            if (created) {
+                res.send(`${film.dataValues.title} has been added succesfully to database`);
+            } else {
+                res.send("Any of the necessary data is missing or not valid");
+            }
+        }).catch((error) => {
+            res.send(error);
+        });
+    } catch (error) {
         res.send(error);
-    });
+    }
 };
 
 FilmsController.getById = async (req, res) => {
@@ -172,13 +188,29 @@ FilmsController.deleteFilm = async (req, res) => {
 
 FilmsController.updateFilm = async (req, res) => {
 
-    let filmId = req.params.id;
+    let filmId = req.body.id;
+
+    let body = {
+        title : req.body.title,
+        year : req.body.year,
+        genre : req.body.genre,
+        price : req.body.price,
+        duration : req.body.duration,
+        director : req.body.director,
+        minAge : req.body.minAge,
+        synopsis : req.body.synopsis,
+        image : req.body.image
+    }
 
     try {
-        await Film.update(req.body, {
+        await Film.update(body, {
             where: { id: filmId }
         }).then((elem) => {
-            res.send(`The film with id ${filmId} has been edited`);
+            if (elem[0] == 1) {                
+                res.send(`The film with id ${filmId} has been edited`);
+            } else {
+                res.send("Any of the necessary data is missing or not valid");
+            }
         }).catch(err => {
             console.log(err);
         });
