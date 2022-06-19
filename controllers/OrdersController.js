@@ -1,6 +1,8 @@
 
 const { Order } = require('../models/index');
 
+const { Film } = require('../models/index');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 let authConfig = require('../config/auth');
@@ -10,7 +12,7 @@ const OrdersController = {};
 
 OrdersController.getOrders = async (req, res) => {
 
-    let myQuery = `SELECT users.id AS clientId, users.name AS Client, users.email AS ClientEmail, films.id AS filmId,
+    let myQuery = `SELECT orders.id AS id, users.id AS clientId, users.name AS Client, users.email AS ClientEmail, films.id AS filmId,
     films.title AS Movie, orders.createdAt AS FromDate, orders.returnDate AS UntilDate, orders.totalPrice AS Price
     FROM users
     INNER JOIN orders ON users.id = orders.userId
@@ -102,16 +104,21 @@ OrdersController.postOrder = async (req, res) => {
     let totalPrice = req.body.totalPrice;
 
     try {
-        await Order.create({
-            returnDate: returnDate,
-            userId: userId,
-            filmId: filmId,
-            totalPrice: totalPrice
-        }).then(rent => {
-            res.send(`User ${user.name} has rented the film ${rent.filmId} until ${rent.returnDate}`);
+        await Film.findByPk(filmId)
+        .then((film) => {
+            Order.create({
+                returnDate: returnDate,
+                userId: userId,
+                filmId: filmId,
+                totalPrice: totalPrice
+            }).then(rent => {
+                res.send(`User ${user.name} has rented the film ${film.dataValues.title} until ${rent.returnDate}`);
+            }).catch((error) => {
+                res.send(error);
+            });
         }).catch((error) => {
             res.send(error);
-        });
+        });        
     } catch (error) {
         res.send(error);
     }
