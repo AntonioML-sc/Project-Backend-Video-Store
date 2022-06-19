@@ -9,13 +9,24 @@ let authConfig = require('../config/auth');
 const OrdersController = {};
 
 OrdersController.getOrders = async (req, res) => {
+
+    let myQuery = `SELECT users.id AS clientId, users.name AS Client, users.email AS ClientEmail, films.id AS filmId,
+    films.title AS Movie, orders.createdAt AS FromDate, orders.returnDate AS UntilDate, orders.totalPrice AS Price
+    FROM users
+    INNER JOIN orders ON users.id = orders.userId
+    INNER JOIN films ON films.id = orders.filmId
+    ORDER BY orders.createdAt DESC`;
+
     try {
-        await Order.findAll()
-            .then(data => {
-                res.send(data);
-            }).catch((error) => {
-                res.send(error);
-            });
+        let search = await Order.sequelize.query(myQuery, {
+            type: Order.sequelize.QueryTypes.SELECT
+        });
+
+        if (search != 0) {
+            res.send(search);
+        } else {
+            res.send("No registered rentals in our database. We are broke!");
+        };
     } catch (error) {
         res.send(error);
     }
@@ -33,7 +44,35 @@ OrdersController.getUserOrders = async (req, res) => {
     FROM users
     INNER JOIN orders ON users.id = orders.userId
     INNER JOIN films ON films.id = orders.filmId
-    WHERE users.id LIKE '${userId}'`;
+    WHERE users.id LIKE '${userId}'
+    ORDER BY orders.createdAt DESC`;
+
+    try {
+        let search = await Order.sequelize.query(myQuery, {
+            type: Order.sequelize.QueryTypes.SELECT
+        });
+
+        if (search != 0) {
+            res.send(search);
+        } else {
+            res.send("The user specified has no registered rentals in our database");
+        };
+    } catch (error) {
+        res.send(error);
+    }
+};
+
+OrdersController.getByEmail = async (req, res) => {
+
+    let userEmail = req.body.email;
+
+    let myQuery = `SELECT users.id AS clientId, users.name AS Client, users.email AS ClientEmail, films.id AS filmId,
+    films.title AS Movie, orders.createdAt AS FromDate, orders.returnDate AS UntilDate, orders.totalPrice AS Price
+    FROM users
+    INNER JOIN orders ON users.id = orders.userId
+    INNER JOIN films ON films.id = orders.filmId
+    WHERE users.email LIKE '${userEmail}'
+    ORDER BY orders.createdAt DESC`;
 
     try {
         let search = await Order.sequelize.query(myQuery, {
