@@ -16,7 +16,8 @@ UsersController.getUsers = async (req, res) => {
         await User.findAll({
             attributes: {
                 exclude: ['password']
-            }
+            },
+            order: [['createdAt', 'DESC']]
         }).then(data => {
             res.send(data)
         }).catch((error) => {
@@ -38,16 +39,24 @@ UsersController.postUser = async (req, res) => {
     let role = "user";
 
     try {
-        await User.create({
-            name: name,
-            password: password,
-            phone: phone,
-            email: email,
-            address: address,
-            role: role
-        }).then(user => {
-            res.send(`${user.name} has been added succesfully to database`);
-
+        await User.findOrCreate({
+            where: {
+                email: email
+            },
+            defaults: {
+                name: name,
+                password: password,
+                phone: phone,            
+                address: address,
+                role: role
+            }            
+        }).then(([user, created]) => {
+            console.log(user, created);
+            if (created) {
+                res.send(`${user.dataValues.name} has been added succesfully to database`);
+            } else {
+                res.send("Any of the necessary data is missing or not valid");
+            }
         }).catch((error) => {
             res.send(error);
         });
@@ -147,21 +156,12 @@ UsersController.getLoggedUser = async (req, res) => {
     try {
         await User.findOne({
             where: { id: user.id },
-            attributes: {
-                exclude: ['password', 'id']
-            }
+            attributes: ['name', 'email', 'phone', 'address']            
         }).then(userFound => {
             if (!userFound) {
                 res.send("User not found");
             } else {
-                res.json({
-                    user: {
-                        name: userFound.name,
-                        email: userFound.email,
-                        phone: userFound.phone,
-                        address: userFound.address
-                    }
-                });
+                res.send(userFound);
             };
         }).catch(err => console.log(err));
     } catch (error) {
