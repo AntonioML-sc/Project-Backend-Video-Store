@@ -33,34 +33,40 @@ UsersController.getUsers = async (req, res) => {
 UsersController.postUser = async (req, res) => {
 
     let body = {
-        name : req.body.name,
-        email : req.body.email,
-        phone : req.body.phone,
-        password : bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
-        address : req.body.address,
-        role : "user"
-    }
-
-    // tests the data provided by using regexp in utils.js
-    if (!utils.validate(body)) {
-        res.send("Any of the necessary data is missing or not valid");
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        password: req.body.password,
+        address: req.body.address,
+        role: "user"
     }
 
     try {
-        await User.findOrCreate({
-            where: {
-                email: body.email
-            },
-            defaults: body            
-        }).then(([user, created]) => {
-            if (created) {
-                res.send(`${user.dataValues.name} has been added succesfully to database`);
-            } else {
-                res.send("Any of the necessary data is missing or not valid");
-            }
-        }).catch((error) => {
-            res.send(error);
-        });
+        // tests the data provided by using regexp in utils.js
+        if (!utils.validate(body)) {
+            res.send("Any of the necessary data is missing or not valid");
+        } else {
+            await User.findOrCreate({
+                where: {
+                    email: body.email
+                },
+                defaults: {
+                    name: req.body.name,
+                    phone: req.body.phone,
+                    password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+                    address: req.body.address,
+                    role: "user"
+                }
+            }).then(([user, created]) => {
+                if (created) {
+                    res.send(`${user.dataValues.name} has been added succesfully to database`);
+                } else {
+                    res.send("Any of the necessary data is missing or not valid");
+                }
+            }).catch((error) => {
+                res.send(error);
+            });
+        }
     } catch (error) {
         res.send(error);
     }
@@ -75,18 +81,13 @@ UsersController.loginUser = async (req, res) => {
         await User.findOne({
             where: { email: email }
         }).then(userFound => {
-
             if (!userFound) {
                 res.send("User or password missing or not correct");
             } else if (bcrypt.compareSync(password, userFound.password)) {
                 //In this point, we know that the email and password are ok
-
                 let token = jwt.sign({ user: userFound }, authConfig.secret, {
                     expiresIn: authConfig.expires
                 });
-
-                console.log(token);
-
                 let loginOKmessage = `Welcome again ${userFound.name}`
                 res.json({
                     loginOKmessage,
@@ -122,7 +123,9 @@ UsersController.getUserByName = async (req, res) => {
             } else {
                 res.send(userFound);
             };
-        }).catch(err => console.log(err));
+        }).catch(error => {
+            console.log(error)
+        });
     } catch (error) {
         res.send(error);
     }
@@ -157,14 +160,16 @@ UsersController.getLoggedUser = async (req, res) => {
     try {
         await User.findOne({
             where: { id: user.id },
-            attributes: ['name', 'email', 'phone', 'address']            
+            attributes: ['name', 'email', 'phone', 'address']
         }).then(userFound => {
             if (!userFound) {
                 res.send("User not found");
             } else {
                 res.send(userFound);
             };
-        }).catch(err => console.log(err));
+        }).catch(error => {
+            res.send(error)
+        });
     } catch (error) {
         res.send(error);
     }
@@ -184,8 +189,8 @@ UsersController.deleteUser = async (req, res) => {
                 return res.status(404).send({ error: 'No not found' });
             }
             res.send("user deleted");
-        }).catch((err) => {
-            console.log(err);
+        }).catch((error) => {
+            res.send(error);
         });
     } catch (error) {
         res.send(error);
@@ -209,8 +214,8 @@ UsersController.updateUser = async (req, res) => {
             where: { id: userId }
         }).then((elem) => {
             res.send(`The user with id ${userId} has been edited`);
-        }).catch(err => {
-            console.log(err);
+        }).catch(error => {
+            res.send(error);
         });
     } catch (error) {
         res.send(error);
@@ -239,8 +244,8 @@ UsersController.updateLoggedUser = async (req, res) => {
             where: { id: userId }
         }).then((elem) => {
             res.send(`${user.name}, you have modified your account successfully`);
-        }).catch(err => {
-            console.log(err);
+        }).catch(error => {
+            res.send(error);
         });
     } catch (error) {
         res.send(error);
