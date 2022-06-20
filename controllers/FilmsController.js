@@ -3,6 +3,9 @@ const { Film } = require('../models/index');
 
 const Sequelize = require('sequelize');
 
+const utils = require('../utils');
+const { validate } = require('uuid');
+
 //UserController object declaration
 const FilmsController = {};
 
@@ -108,40 +111,37 @@ FilmsController.getByDirector = async (req, res) => {
 
 FilmsController.registerFilm = async (req, res) => {
 
-    let title = req.body.title;
-    let year = req.body.year;
-    let genre = req.body.genre;
-    let price = req.body.price;
-    let duration = req.body.duration;
-    let director = req.body.director;
-    let minAge = req.body.minAge;
-    let synopsis = req.body.synopsis;
-    let image = req.body.image;
+    let body = {
+        title: req.body.title,
+        year: req.body.year,
+        genre: req.body.genre,
+        price: req.body.price,
+        duration: req.body.duration,
+        director: req.body.director,
+        minAge: req.body.minAge,
+        synopsis: req.body.synopsis,
+        image: req.body.image
+    }
 
     try {
-        await Film.findOrCreate({
-            where: {
-                title: title
-            },
-            defaults: {
-                    year: year,
-                    genre: genre,
-                    price: price,
-                    duration: duration,
-                    director: director,
-                    minAge: minAge,
-                    synopsis: synopsis,
-                    image: image                
-            }            
-        }).then(([film, created]) => {
-            if (created) {
-                res.send(`${film.dataValues.title} has been added succesfully to database`);
-            } else {
-                res.send("Any of the necessary data is missing or not valid");
-            }
-        }).catch((error) => {
-            res.send(error);
-        });
+        if (!utils.validate(body)) {
+            res.send("Any of the necessary data is missing or not valid");
+        } else {
+            await Film.findOrCreate({
+                where: {
+                    title: body.title
+                },
+                defaults: body
+            }).then(([film, created]) => {
+                if (created) {
+                    res.send(`${film.dataValues.title} has been added succesfully to database`);
+                } else {
+                    res.send("Any of the necessary data is missing or not valid");
+                }
+            }).catch((error) => {
+                res.send(error);
+            });
+        }
     } catch (error) {
         res.send(error);
     }
@@ -189,22 +189,22 @@ FilmsController.updateFilm = async (req, res) => {
     let filmId = req.body.id;
 
     let body = {
-        title : req.body.title,
-        year : req.body.year,
-        genre : req.body.genre,
-        price : req.body.price,
-        duration : req.body.duration,
-        director : req.body.director,
-        minAge : req.body.minAge,
-        synopsis : req.body.synopsis,
-        image : req.body.image
+        title: req.body.title,
+        year: req.body.year,
+        genre: req.body.genre,
+        price: req.body.price,
+        duration: req.body.duration,
+        director: req.body.director,
+        minAge: req.body.minAge,
+        synopsis: req.body.synopsis,
+        image: req.body.image
     }
 
     try {
         await Film.update(body, {
             where: { id: filmId }
         }).then((elem) => {
-            if (elem[0] == 1) {                
+            if (elem[0] == 1) {
                 res.send(`The film with id ${filmId} has been edited`);
             } else {
                 res.send("Any of the necessary data is missing or not valid");

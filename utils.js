@@ -20,7 +20,7 @@ const evalName = (st) => {
 }
 
 const evalTitle = (st) => {
-    return /^[a-zA-Z\u00C0-\u00FF .,?!:@%&+\$*\-]+$/.test(st);
+    return /^[a-zA-Z\u00C0-\u00FF \d.,?!:@%&+'\$*\-]+$/.test(st);
 }
 
 const evalGenre = (st) => {
@@ -54,12 +54,12 @@ const evalField = (key, value) => {
         case 'title': return evalTitle(value);
         case 'year': return evalNaturalNumber(value);
         case 'director': return evalName(value);
-        case 'gender': return evalGenre(value);
+        case 'genre': return evalGenre(value);
         case 'price': return evalNaturalNumber(value);
         case 'minAge': return evalNaturalNumber(value);
         case 'synopsis': return true;
         case 'duration': return evalNaturalNumber(value);
-        case 'img': return true;
+        case 'image': return true;
         case 'id': return evalUUID(value);
         case 'userId': return evalUUID(value);
         case 'filmId': return evalUUID(value);
