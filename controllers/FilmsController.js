@@ -2,7 +2,6 @@
 const { Film } = require('../models/index');
 
 const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
 //UserController object declaration
 const FilmsController = {};
@@ -135,7 +134,6 @@ FilmsController.registerFilm = async (req, res) => {
                     image: image                
             }            
         }).then(([film, created]) => {
-            console.log(film, created);
             if (created) {
                 res.send(`${film.dataValues.title} has been added succesfully to database`);
             } else {

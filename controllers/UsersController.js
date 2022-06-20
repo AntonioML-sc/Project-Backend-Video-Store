@@ -8,6 +8,8 @@ let authConfig = require('../config/auth');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
+const utils = require('../utils');
+
 //UserController object declaration
 const UsersController = {};
 
@@ -28,30 +30,29 @@ UsersController.getUsers = async (req, res) => {
     }
 };
 
-
 UsersController.postUser = async (req, res) => {
 
-    let name = req.body.name;
-    let email = req.body.email;
-    let phone = req.body.phone;
-    let password = bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds));
-    let address = req.body.address;
-    let role = "user";
+    let body = {
+        name : req.body.name,
+        email : req.body.email,
+        phone : req.body.phone,
+        password : bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+        address : req.body.address,
+        role : "user"
+    }
+
+    // tests the data provided by using regexp in utils.js
+    if (!utils.validate(body)) {
+        res.send("Any of the necessary data is missing or not valid");
+    }
 
     try {
         await User.findOrCreate({
             where: {
-                email: email
+                email: body.email
             },
-            defaults: {
-                name: name,
-                password: password,
-                phone: phone,            
-                address: address,
-                role: role
-            }            
+            defaults: body            
         }).then(([user, created]) => {
-            console.log(user, created);
             if (created) {
                 res.send(`${user.dataValues.name} has been added succesfully to database`);
             } else {
