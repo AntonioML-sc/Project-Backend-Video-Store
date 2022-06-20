@@ -199,24 +199,48 @@ UsersController.deleteUser = async (req, res) => {
 
 UsersController.updateUser = async (req, res) => {
     // admin only
-    let userId = req.params.id;
-
     let body = {
+        id: req.body.id,
         name: req.body.name,
-        password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+        password: req.body.password,
         phone: req.body.phone,
         email: req.body.email,
         address: req.body.address
     };
 
     try {
-        await User.update(body, {
-            where: { id: userId }
-        }).then((elem) => {
-            res.send(`The user with id ${userId} has been edited`);
-        }).catch(error => {
-            res.send(error);
-        });
+        if (!utils.validate(body)) {
+            res.send("Any of the necessary data is missing or not valid");
+        } else {
+            await User.findOne({
+                where: { email: body.email }
+            }).then(userFound => {
+                if ((!userFound) || (userFound.id != body.id)) {
+                    res.send("Any of the necessary data is missing or not valid");
+                } else {
+                    User.update(
+                        {
+                            name: req.body.name,
+                            password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+                            phone: req.body.phone,
+                            email: req.body.email,
+                            address: req.body.address
+                        }, {
+                        where: { id: body.id }
+                    }).then((elem) => {
+                        if (elem[0] == 0) {
+                            res.send("Any of the necessary data is missing or not valid");
+                        } else {
+                            res.send(`The user ${body.name} with id ${body.id} has been edited`);
+                        }
+                    }).catch(error => {
+                        res.send(error);
+                    });
+                }
+            }).catch(error => {
+                res.send(error);
+            });
+        }
     } catch (error) {
         res.send(error);
     }
@@ -231,27 +255,37 @@ UsersController.updateLoggedUser = async (req, res) => {
 
     let userId = user.id;
 
-    // Changing name and id and is not allowed
+    // Changing name, email and id and is not allowed
     let body = {
-        password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+        password: req.body.password,
         phone: req.body.phone,
-        email: req.body.email,
         address: req.body.address
     };
 
     try {
-        await User.update(body, {
-            where: { id: userId }
-        }).then((elem) => {
-            res.send(`${user.name}, you have modified your account successfully`);
-        }).catch(error => {
-            res.send(error);
-        });
+        if (!utils.validate(body)) {
+            res.send("Any of the necessary data is missing or not valid");
+        } else {
+            await User.update({
+                password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
+                phone: req.body.phone,
+                address: req.body.address
+            }, {
+                where: { id: userId }
+            }).then((elem) => {
+                if (elem[0] == 0) {
+                    res.send("Any of the necessary data is missing or not valid");
+                } else {
+                    res.send(`${user.name}, you have modified your account successfully`);
+                }
+            }).catch(error => {
+                res.send(error);
+            });
+        }
     } catch (error) {
         res.send(error);
     }
 }
-
 
 //Export
 module.exports = UsersController;
