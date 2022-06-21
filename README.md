@@ -14,7 +14,7 @@ El objeto de este proyecto con fines de formación, el cuarto de los que desarro
 
 #### Tecnologías aplicadas:
 
-Necesario: Javascript, Node.js, SQL, MySQL, Sequelize, Sequelize-cli, jsonwebtoken, bcript, dotenv, UUID.
+Necesario: Javascript, Node.js, Express, SQL, MySQL, Sequelize, Sequelize-cli, jsonwebtoken, bcript, dotenv, UUID.
 Muy recomendado: MySQL Workbench, Postman, Nodemon.
 
 #### Objetivos:
@@ -66,7 +66,7 @@ Ahora ya podemos realizar peticiones a través de los endpoints (recomendado Pos
 <img src="./img/myAccount.png">
 
 - DELETE http://localhost:3000/users/delete => (solo admin) Permite borrar un usuario de la base de datos. Su id se pasa por body.<br>
-- PUT http://localhost:3000/users/update/:id => (solo admin) Permite modificar parte de los datos de un usuario, facilitados por body, cuya id se indica por URL.<br>
+- PUT http://localhost:3000/users/update/:id => (solo admin) Permite modificar parte de los datos de un usuario, facilitados por body, cuya id se indica también por body.<br>
 - PUT http://localhost:3000/users/editMyAccount => (con autentificación) Permite modificar parte de los datos del usuario que haya hecho login. Sus credenciales se obtienen del token, que es necesario. <br>
 
 2- Films: <br>
