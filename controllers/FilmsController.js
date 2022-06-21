@@ -1,10 +1,7 @@
 
 const { Film } = require('../models/index');
 
-const Sequelize = require('sequelize');
-
 const utils = require('../utils');
-const { validate } = require('uuid');
 
 //UserController object declaration
 const FilmsController = {};
@@ -102,7 +99,7 @@ FilmsController.getByDirector = async (req, res) => {
         if (search != 0) {
             res.send(search);
         } else {
-            res.send("There are no movies with the title provided");
+            res.send("There are no movies of this director");
         }
     } catch (error) {
         res.send(error);
@@ -176,8 +173,8 @@ FilmsController.deleteFilm = async (req, res) => {
                 return res.status(404).send({ error: 'Film not found' });
             }
             res.send("Film deleted");
-        }).catch((err) => {
-            console.log(err);
+        }).catch((error) => {
+            res.send(error);
         });
     } catch (error) {
         res.send(error);
@@ -201,17 +198,31 @@ FilmsController.updateFilm = async (req, res) => {
     }
 
     try {
-        await Film.update(body, {
-            where: { id: filmId }
-        }).then((elem) => {
-            if (elem[0] == 1) {
-                res.send(`The film with id ${filmId} has been edited`);
-            } else {
-                res.send("Any of the necessary data is missing or not valid");
-            }
-        }).catch(err => {
-            console.log(err);
-        });
+        if ((!utils.validate(body)) || (!utils.validate({"id": filmId}))) {
+            res.send("Any of the necessary data is missing or not valid");
+        } else {
+            await Film.findOne({
+                where: { title: body.title }
+            }).then(filmFound => {
+                if ((filmFound != null) && (filmFound.id != filmId)) {
+                    res.send("Any of the necessary data is missing or not valid 2");
+                } else {
+                    Film.update(body, {
+                        where: { id: filmId }
+                    }).then((elem) => {
+                        if (elem[0] == 1) {
+                            res.send(`The film ${body.title} with id ${filmId} has been edited`);
+                        } else {
+                            res.send("Any of the necessary data is missing or not valid 3");
+                        }
+                    }).catch(error => {
+                        res.send(error);
+                    });
+                }
+            }).catch(error => {
+                res.send(error);
+            });
+        }
     } catch (error) {
         res.send(error);
     }

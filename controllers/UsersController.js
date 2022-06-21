@@ -215,7 +215,8 @@ UsersController.updateUser = async (req, res) => {
             await User.findOne({
                 where: { email: body.email }
             }).then(userFound => {
-                if ((!userFound) || (userFound.id != body.id)) {
+                console.log("userFound", userFound);
+                if ((userFound != null) && (userFound.id != body.id)) {
                     res.send("Any of the necessary data is missing or not valid");
                 } else {
                     User.update(
