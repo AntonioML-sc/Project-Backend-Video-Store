@@ -42,8 +42,8 @@ En este punto ya tendremos una base de datos como la mostrada:<br>
 
 <img src="./img/DB.png">
 
-Ahora ya podemos realizar peticiones a través de los endpoints (recomendado Postman). Se ha asignado el puerto 3000 por defecto, de manera que la raíz de las peticiones será: <br>
-    http://localhost:3000 <br>
+Ahora ya podemos realizar peticiones a través de los endpoints (recomendado Postman). Se ha asignado el puerto 5000 por defecto, de manera que la raíz de las peticiones será: <br>
+    http://localhost:5000 <br>
 
 <img src="./img/RegisterUser.png">
 
@@ -51,49 +51,49 @@ Ahora ya podemos realizar peticiones a través de los endpoints (recomendado Pos
 
 1- Users: <br>
 
-- GET http://localhost:3000/users/ => (solo admin) Muestra la información de todos los usuarios registrados. <br>
+- GET http://localhost:5000/users/ => (solo admin) Muestra la información de todos los usuarios registrados. <br>
 
-- POST http://localhost:3000/users/register => Registro de usuario nuevo. Se procede a la validación de los datos. La contraseña debe tener un mínimo de 8 caracteres, una letra mayúscula, una minúscula, un número y un caracter especial. El resto de campos deben tener un formato válido. El email no puede estar ya registrado. <br>
+- POST http://localhost:5000/users/register => Registro de usuario nuevo. Se procede a la validación de los datos. La contraseña debe tener un mínimo de 8 caracteres, una letra mayúscula, una minúscula, un número y un caracter especial. El resto de campos deben tener un formato válido. El email no puede estar ya registrado. <br>
 
-- POST http://localhost:3000/users/login => Login de usuario, pasando por body email y password. Si las credenciales son válidas, se proveerá del token necesario para acceder al resto de funciones que exijan autentificación. Para acceder a las funciones que exijan ser administrador, es necesario que el registro de ese usuario tenga el campo 'role':'admin'. Por motivos obvios no es posible crear un usuario con credenciales de administrador a través de peticiones, de modo que para disponer de un administrador es preciso editar este campo directamente en el registro de User en la base de datos. <br>
+- POST http://localhost:5000/users/login => Login de usuario, pasando por body email y password. Si las credenciales son válidas, se proveerá del token necesario para acceder al resto de funciones que exijan autentificación. Para acceder a las funciones que exijan ser administrador, es necesario que el registro de ese usuario tenga el campo 'role':'admin'. Por motivos obvios no es posible crear un usuario con credenciales de administrador a través de peticiones, de modo que para disponer de un administrador es preciso editar este campo directamente en el registro de User en la base de datos. <br>
 
 <img src="./img/Login.png">
 
-- POST http://localhost:3000/users/getByName => (solo admin) Muestra la información de todos los usuarios registrados con una coincidencia parcial con el nombre introducido. <br>
-- POST http://localhost:3000/users/getByEmail => (solo admin) Muestra la información del usuario con el email indicado. <br>
-- GET http://localhost:3000/users/myAccount => (con autentificación) Muestra la información del usuario que haya hecho login. Sus credenciales se obtienen del token, que es necesario. <br>
+- POST http://localhost:5000/users/getByName => (solo admin) Muestra la información de todos los usuarios registrados con una coincidencia parcial con el nombre introducido. <br>
+- POST http://localhost:5000/users/getByEmail => (solo admin) Muestra la información del usuario con el email indicado. <br>
+- GET http://localhost:5000/users/myAccount => (con autentificación) Muestra la información del usuario que haya hecho login. Sus credenciales se obtienen del token, que es necesario. <br>
 
 <img src="./img/myAccount.png">
 
-- DELETE http://localhost:3000/users/delete => (solo admin) Permite borrar un usuario de la base de datos. Su id se pasa por body.<br>
-- PUT http://localhost:3000/users/update/:id => (solo admin) Permite modificar parte de los datos de un usuario, facilitados por body, cuya id se indica también por body.<br>
-- PUT http://localhost:3000/users/editMyAccount => (con autentificación) Permite modificar parte de los datos del usuario que haya hecho login. Sus credenciales se obtienen del token, que es necesario. <br>
+- DELETE http://localhost:5000/users/delete => (solo admin) Permite borrar un usuario de la base de datos. Su id se pasa por body.<br>
+- PUT http://localhost:5000/users/update/:id => (solo admin) Permite modificar parte de los datos de un usuario, facilitados por body, cuya id se indica también por body.<br>
+- PUT http://localhost:5000/users/editMyAccount => (con autentificación) Permite modificar parte de los datos del usuario que haya hecho login. Sus credenciales se obtienen del token, que es necesario. <br>
 
 2- Films: <br>
 
-- GET http://localhost:3000/films/ => Muestra la información de todas las películas registradas. <br>
-- GET http://localhost:3000/films/getByGenre/:genre1/:genre2/:genre3 => Muestra la información de todas las películas filtradas por coincidencias con uno, dos o tres géneros, provistos por url, ordenadas por año de lanzamiento (primero las más recientes). <br>
+- GET http://localhost:5000/films/ => Muestra la información de todas las películas registradas. <br>
+- GET http://localhost:5000/films/getByGenre/:genre1/:genre2/:genre3 => Muestra la información de todas las películas filtradas por coincidencias con uno, dos o tres géneros, provistos por url, ordenadas por año de lanzamiento (primero las más recientes). <br>
 
 <img src="./img/GetByGender.png">
 
-- GET http://localhost:3000/films/getById' => (solo admin) Muestra la información del film con el id indicado por body. <br>
-- GET http://localhost:3000/films/getByTitle/:title => Muestra la información de todas las películas filtradas por coincidencias con el título indicado por url. <br>
-- GET http://localhost:3000/films/getByDirector/:director => Muestra la información de todas las películas filtradas por coincidencias con el nombre del director, indicado por url. <br>
-- POST http://localhost:3000/films/register => (solo admin) Permite introducir una nueva película en la base de datos. El título no puede estar ya registrado. <br>
+- GET http://localhost:5000/films/getById' => (solo admin) Muestra la información del film con el id indicado por body. <br>
+- GET http://localhost:5000/films/getByTitle/:title => Muestra la información de todas las películas filtradas por coincidencias con el título indicado por url. <br>
+- GET http://localhost:5000/films/getByDirector/:director => Muestra la información de todas las películas filtradas por coincidencias con el nombre del director, indicado por url. <br>
+- POST http://localhost:5000/films/register => (solo admin) Permite introducir una nueva película en la base de datos. El título no puede estar ya registrado. <br>
 
 <img src="./img/RegisterFilm.png">
 
-- DELETE http://localhost:3000/films/delete' => (solo admin) Permite borrar un film de la base de datos. Su id se pasa por body.<br>
-- PUT http://localhost:3000/films/update => (solo admin) Permite modificar los datos de un film, facilitados por body, cuya id se indica también por body.<br>
+- DELETE http://localhost:5000/films/delete' => (solo admin) Permite borrar un film de la base de datos. Su id se pasa por body.<br>
+- PUT http://localhost:5000/films/update => (solo admin) Permite modificar los datos de un film, facilitados por body, cuya id se indica también por body.<br>
 
 3- Orders: <br>
 
-- GET http://localhost:3000/orders/ => (solo admin) Muestra la información de todos los alquileres registrados, en orden cronológico descendente. <br>
-- GET http://localhost:3000/orders/userOrders => (con autentificación) Muestra la información de todos los alquileres registrados a nombre del usuario que haya hecho login. Las credenciales del usuario se obtienen de su token. <br>
-- POST http://localhost:3000/orders/getByEmail => (solo admin) Muestra la información de todos los alquileres registrados a nombre del usuario cuyo email se indica por body<br>
-- POST http://localhost:3000/orders/register => (con autentificación) Permite al usuario que haya hecho login registrar el alquiler de una película a su nombre. <br>
-- DELETE http://localhost:3000/orders/delete => (solo admin) Permite borrar un registro de alquiler de la base de datos. Su id se pasa por body.<br>
-- PUT http://localhost:3000/orders/update/:id => (solo admin) Permite modificar los datos de un registro de alquiler, facilitados por body, cuya id se indica por url.<br>
+- GET http://localhost:5000/orders/ => (solo admin) Muestra la información de todos los alquileres registrados, en orden cronológico descendente. <br>
+- GET http://localhost:5000/orders/userOrders => (con autentificación) Muestra la información de todos los alquileres registrados a nombre del usuario que haya hecho login. Las credenciales del usuario se obtienen de su token. <br>
+- POST http://localhost:5000/orders/getByEmail => (solo admin) Muestra la información de todos los alquileres registrados a nombre del usuario cuyo email se indica por body<br>
+- POST http://localhost:5000/orders/register => (con autentificación) Permite al usuario que haya hecho login registrar el alquiler de una película a su nombre. <br>
+- DELETE http://localhost:5000/orders/delete => (solo admin) Permite borrar un registro de alquiler de la base de datos. Su id se pasa por body.<br>
+- PUT http://localhost:5000/orders/update/:id => (solo admin) Permite modificar los datos de un registro de alquiler, facilitados por body, cuya id se indica por url.<br>
 
 #### Bugs conocidos y posibles nuevos trabajos:
 

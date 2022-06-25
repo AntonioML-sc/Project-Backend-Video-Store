@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     price: DataTypes.INTEGER,
     synopsis: DataTypes.TEXT,
     minAge: DataTypes.INTEGER,
-    image: DataTypes.STRING
+    image: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Film',
