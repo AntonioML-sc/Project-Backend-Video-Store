@@ -36,7 +36,7 @@ FilmsController.getByGenre = async (req, res) => {
         genre3 = genres.genre3;
     }
 
-    let myQuery = `SELECT films.title AS Movie, films.year AS ReleaseYear, films.genre AS Genres
+    let myQuery = `SELECT films.title AS title, films.year AS ReleaseYear, films.genre AS Genres
     FROM films
     WHERE films.genre LIKE '%${genre1}%' AND films.genre LIKE '%${genre2}%' AND films.genre LIKE '%${genre3}%'
     ORDER BY films.year DESC`;
@@ -60,7 +60,7 @@ FilmsController.getByTitle = async (req, res) => {
 
     let title = req.params.title;
 
-    let myQuery = `SELECT films.title AS Movie, films.year AS ReleaseYear, films.genre AS Genres, films.director AS Director,
+    let myQuery = `SELECT films.title AS title, films.year AS ReleaseYear, films.genre AS Genres, films.director AS Director,
     films.duration AS Duration, films.minAge AS RecomendedAge, films.synopsis AS Synopsis
     FROM films
     WHERE films.title LIKE '%${title}%'
@@ -85,7 +85,7 @@ FilmsController.getByDirector = async (req, res) => {
 
     let director = req.params.director;
 
-    let myQuery = `SELECT films.title AS Movie, films.year AS ReleaseYear, films.genre AS Genres, films.director AS Director,
+    let myQuery = `SELECT films.title AS title, films.year AS ReleaseYear, films.genre AS Genres, films.director AS Director,
     films.duration AS Duration, films.minAge AS RecomendedAge, films.synopsis AS Synopsis
     FROM films
     WHERE films.director LIKE '%${director}%'

@@ -21,12 +21,10 @@ UsersController.getUsers = async (req, res) => {
             },
             order: [['createdAt', 'DESC']]
         }).then(data => {
-            res.send(data)
-        }).catch((error) => {
-            res.send(error);
-        });
+            res.status(200).send(data);
+        })
     } catch (error) {
-        res.send(error);
+        res.status(500).json({ msg: "An error occurred during search", error });;
     }
 };
 
