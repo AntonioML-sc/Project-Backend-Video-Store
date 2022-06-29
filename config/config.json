@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": "1234",
-    "database": "videostore",
-    "host": "127.0.0.1",
+    "username": "beb74c938f6538",
+    "password": "34c0aca5",
+    "database": "heroku_c7158fd62466497",
+    "host": "eu-cdbr-west-02.cleardb.net",
     "port": "3306",
     "dialect": "mysql"
   },
@@ -15,10 +15,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": "1234",
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "username": "beb74c938f6538",
+    "password": "34c0aca5",
+    "database": "heroku_c7158fd62466497",
+    "host": "eu-cdbr-west-02.cleardb.net",
     "dialect": "mysql"
   }
 }
