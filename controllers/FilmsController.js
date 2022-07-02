@@ -36,6 +36,38 @@ FilmsController.getByGenre = async (req, res) => {
         genre3 = genres.genre3;
     }
 
+    let myQuery = `SELECT *
+    FROM films
+    WHERE films.genre LIKE '%${genre1}%' AND films.genre LIKE '%${genre2}%' AND films.genre LIKE '%${genre3}%'
+    ORDER BY films.year DESC`;
+
+    try {
+        let search = await Film.sequelize.query(myQuery, {
+            type: Film.sequelize.QueryTypes.SELECT
+        });
+
+        if (search != 0) {
+            res.send(search);
+        } else {
+            res.send("There are no movies of the indicated genre");
+        }
+    } catch (error) {
+        res.send(error);
+    }
+}
+
+FilmsController.getByGenre2 = async (req, res) => {
+
+    let genres = req.params;
+    let genre1 = genres.genre1;
+    let [genre2, genre3] = ["", ""];
+    if (genres.genre2 != undefined) {
+        genre2 = genres.genre2;
+    }
+    if (genres.genre3 != undefined) {
+        genre3 = genres.genre3;
+    }
+
     let myQuery = `SELECT films.title AS title, films.year AS ReleaseYear, films.genre AS Genres
     FROM films
     WHERE films.genre LIKE '%${genre1}%' AND films.genre LIKE '%${genre2}%' AND films.genre LIKE '%${genre3}%'
@@ -57,6 +89,30 @@ FilmsController.getByGenre = async (req, res) => {
 }
 
 FilmsController.getByTitle = async (req, res) => {
+
+    let title = req.params.title;
+
+    let myQuery = `SELECT *
+    FROM films
+    WHERE films.title LIKE '%${title}%'
+    ORDER BY films.year DESC`;
+
+    try {
+        let search = await Film.sequelize.query(myQuery, {
+            type: Film.sequelize.QueryTypes.SELECT
+        });
+
+        if (search != 0) {
+            res.send(search);
+        } else {
+            res.send("There are no movies with the title provided");
+        }
+    } catch (error) {
+        res.send(error);
+    }
+}
+
+FilmsController.getByTitle2 = async (req, res) => {
 
     let title = req.params.title;
 
