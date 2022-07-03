@@ -15,12 +15,10 @@ FilmsController.getFilms = async (req, res) => {
             order: [['year', 'DESC'], ['title']]
         })
             .then(data => {
-                res.send(data);
-            }).catch((error) => {
-                res.send(error);
-            });
+                res.status(200).send(data);
+            })
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 };
 
@@ -47,12 +45,12 @@ FilmsController.getByGenre = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("There are no movies of the indicated genre");
+            res.status(404).send(search);
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -79,12 +77,12 @@ FilmsController.getByGenre2 = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("There are no movies of the indicated genre");
+            res.status(404).send("There are no movies of the indicated genre");
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -103,9 +101,9 @@ FilmsController.getByTitle = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("There are no movies with the title provided");
+            res.status(404).send(search);
         }
     } catch (error) {
         res.send(error);
