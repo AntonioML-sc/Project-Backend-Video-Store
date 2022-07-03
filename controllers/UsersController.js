@@ -42,7 +42,7 @@ UsersController.postUser = async (req, res) => {
     try {
         // tests the data provided by using regexp in utils.js
         if (!utils.validate(body)) {
-            res.send("Any of the necessary data is missing or not valid");
+            res.status(422).send("Any of the necessary data is missing or not valid"); // any of the values is not valid
         } else {
             await User.findOrCreate({
                 where: {
@@ -57,12 +57,12 @@ UsersController.postUser = async (req, res) => {
                 }
             }).then(([user, created]) => {
                 if (created) {
-                    res.send(`${user.dataValues.name} has been added succesfully to database`);
+                    res.status(201).send(`${user.dataValues.name} has been added succesfully to database`);
                 } else {
-                    res.send("Any of the necessary data is missing or not valid");
+                    res.status(409).send("Any of the necessary data is missing or not valid"); // email already exists
                 }
             }).catch((error) => {
-                res.send(error);
+                res.status(500).send(error);
             });
         }
     } catch (error) {
@@ -80,14 +80,23 @@ UsersController.loginUser = async (req, res) => {
             where: { email: email }
         }).then(userFound => {
             if (!userFound) {
-                res.send("User or password missing or not correct");
+                res.status(401).send("User or password missing or not correct");
             } else if (bcrypt.compareSync(password, userFound.password)) {
                 //In this point, we know that the email and password are ok
-                let token = jwt.sign({ user: userFound }, authConfig.secret, {
+                const userInfo = {
+                    "name": userFound.name,
+                    "email": userFound.email,
+                    "phone": userFound.phone,
+                    "address": userFound.address,
+                    "role": userFound.role,
+                    "createdAt": userFound.createdAt,
+                    "updatedAt": userFound.updatedAt
+                }
+                let token = jwt.sign({ user: userInfo }, authConfig.secret, {
                     expiresIn: authConfig.expires
                 });
                 let loginOKmessage = `Welcome again ${userFound.name}`
-                res.json({
+                res.status(200).json({
                     loginOKmessage,
                     user: {
                         name: userFound.name,
@@ -96,11 +105,11 @@ UsersController.loginUser = async (req, res) => {
                     token: token
                 })
             } else {
-                res.send("Usuario o password incorrectos");
+                res.status(401).send("User or password missing or not correct");
             };
         }).catch(err => console.log(err));
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 };
 
@@ -117,15 +126,13 @@ UsersController.getUserByName = async (req, res) => {
             }
         }).then(userFound => {
             if (!userFound) {
-                res.send("There is not a coincidence in the database");
+                res.status(404).send("There is not a coincidence in the database");
             } else {
-                res.send(userFound);
+                res.status(200).send(userFound);
             };
-        }).catch(error => {
-            console.log(error)
         });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -138,13 +145,13 @@ UsersController.getUserByEmail = async (req, res) => {
             where: { email: email }
         }).then(userFound => {
             if (!userFound) {
-                res.send("This email is not in the database");
+                res.status(404).send("This email is not in the database");
             } else {
-                res.send(userFound);
+                res.status(200).send(userFound);
             };
-        }).catch(err => console.log(err));
+        });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -161,15 +168,13 @@ UsersController.getLoggedUser = async (req, res) => {
             attributes: ['name', 'email', 'phone', 'address']
         }).then(userFound => {
             if (!userFound) {
-                res.send("User not found");
+                res.status(404).send("User not found"); // this would never happen!
             } else {
-                res.send(userFound);
+                res.status(200).send(userFound);
             };
-        }).catch(error => {
-            res.send(error)
         });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -184,14 +189,12 @@ UsersController.deleteUser = async (req, res) => {
             }
         }).then(count => {
             if (!count) {
-                return res.status(404).send({ error: 'No not found' });
+                return res.status(404).send({ error: 'User not found' });
             }
-            res.send("user deleted");
-        }).catch((error) => {
-            res.send(error);
+            res.status(204).send("user deleted");
         });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -208,14 +211,14 @@ UsersController.updateUser = async (req, res) => {
 
     try {
         if (!utils.validate(body)) {
-            res.send("Any of the necessary data is missing or not valid");
+            res.status(401).send("Any of the necessary data is missing or not valid");
         } else {
             await User.findOne({
                 where: { email: body.email }
             }).then(userFound => {
                 console.log("userFound", userFound);
                 if ((userFound != null) && (userFound.id != body.id)) {
-                    res.send("Any of the necessary data is missing or not valid");
+                    res.status(422).send("Any of the necessary data is missing or not valid"); // conflict
                 } else {
                     User.update(
                         {
@@ -228,20 +231,18 @@ UsersController.updateUser = async (req, res) => {
                         where: { id: body.id }
                     }).then((elem) => {
                         if (elem[0] == 0) {
-                            res.send("Any of the necessary data is missing or not valid");
+                            res.status(401).send("Any of the necessary data is missing or not valid");
                         } else {
-                            res.send(`The user ${body.name} with id ${body.id} has been edited`);
+                            res.status(204).send(`The user ${body.name} with id ${body.id} has been edited`);
                         }
                     }).catch(error => {
-                        res.send(error);
+                        res.status(500).send(error);
                     });
                 }
-            }).catch(error => {
-                res.send(error);
             });
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -263,7 +264,7 @@ UsersController.updateLoggedUser = async (req, res) => {
 
     try {
         if (!utils.validate(body)) {
-            res.send("Any of the necessary data is missing or not valid");
+            res.status(401).send("Any of the necessary data is missing or not valid"); // values not valid
         } else {
             await User.update({
                 password: bcrypt.hashSync(req.body.password, Number.parseInt(authConfig.rounds)),
@@ -273,16 +274,14 @@ UsersController.updateLoggedUser = async (req, res) => {
                 where: { id: userId }
             }).then((elem) => {
                 if (elem[0] == 0) {
-                    res.send("Any of the necessary data is missing or not valid");
+                    res.status(404).send("Any of the necessary data is missing or not valid"); // not found (should never happen!)
                 } else {
-                    res.send(`${user.name}, you have modified your account successfully`);
+                    res.status(204).send(`${user.name}, you have modified your account successfully`);
                 }
-            }).catch(error => {
-                res.send(error);
             });
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
