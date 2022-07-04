@@ -84,6 +84,7 @@ UsersController.loginUser = async (req, res) => {
             } else if (bcrypt.compareSync(password, userFound.password)) {
                 //In this point, we know that the email and password are ok
                 const userInfo = {
+                    "id": userFound.id,
                     "name": userFound.name,
                     "email": userFound.email,
                     "phone": userFound.phone,
