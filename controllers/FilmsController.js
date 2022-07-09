@@ -126,12 +126,12 @@ FilmsController.getByTitle2 = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("There are no movies with the title provided");
+            res.status(404).send("There are no movies with the title provided");
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -151,12 +151,12 @@ FilmsController.getByDirector = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("There are no movies of this director");
+            res.status(404).send(search);
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -185,16 +185,14 @@ FilmsController.registerFilm = async (req, res) => {
                 defaults: body
             }).then(([film, created]) => {
                 if (created) {
-                    res.send(`${film.dataValues.title} has been added succesfully to database`);
+                    res.status(201).send(`${film.dataValues.title} has been added succesfully to database`);
                 } else {
-                    res.send("Any of the necessary data is missing or not valid");
+                    res.status(400).send("Any of the necessary data is missing or not valid");
                 }
-            }).catch((error) => {
-                res.send(error);
             });
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 };
 
@@ -204,12 +202,10 @@ FilmsController.getById = async (req, res) => {
 
     try {
         await Film.findByPk(filmId).then(data => {
-            res.send(data);
-        }).catch((error) => {
-            res.send(error);
+            res.status(200).send(data);
         });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -226,12 +222,10 @@ FilmsController.deleteFilm = async (req, res) => {
             if (!count) {
                 return res.status(404).send({ error: 'Film not found' });
             }
-            res.send("Film deleted");
-        }).catch((error) => {
-            res.send(error);
+            res.status(204).send("Film deleted");
         });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -253,32 +247,28 @@ FilmsController.updateFilm = async (req, res) => {
 
     try {
         if ((!utils.validate(body)) || (!utils.validate({"id": filmId}))) {
-            res.send("Any of the necessary data is missing or not valid");
+            res.status(400).send("Any of the necessary data is missing or not valid");
         } else {
             await Film.findOne({
                 where: { title: body.title }
             }).then(filmFound => {
                 if ((filmFound != null) && (filmFound.id != filmId)) {
-                    res.send("Any of the necessary data is missing or not valid 2");
+                    res.status(400).send("Any of the necessary data is missing or not valid");
                 } else {
                     Film.update(body, {
                         where: { id: filmId }
                     }).then((elem) => {
                         if (elem[0] == 1) {
-                            res.send(`The film ${body.title} with id ${filmId} has been edited`);
+                            res.status(201).send(`The film ${body.title} with id ${filmId} has been edited`);
                         } else {
-                            res.send("Any of the necessary data is missing or not valid 3");
+                            res.status(400).send("Any of the necessary data is missing or not valid");
                         }
-                    }).catch(error => {
-                        res.send(error);
                     });
                 }
-            }).catch(error => {
-                res.send(error);
             });
         }
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 

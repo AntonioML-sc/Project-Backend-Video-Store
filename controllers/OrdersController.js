@@ -25,12 +25,15 @@ OrdersController.getOrders = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("No registered rentals in our database. We are broke!");
+            res.status(404).send("No registered rentals in our database. We are broke!");
         };
     } catch (error) {
-        res.send(error);
+        res.status(500).json({
+            msg: `Something got wrong.`,
+            error: error
+        });
     }
 };
 
@@ -55,12 +58,15 @@ OrdersController.getUserOrders = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("The user specified has no registered rentals in our database");
+            res.status(404).send(search); // No orders registered
         };
     } catch (error) {
-        res.send(error);
+        res.status(500).json({
+            msg: `Something got wrong.`,
+            error: error
+        });
     }
 };
 
@@ -82,12 +88,12 @@ OrdersController.getByEmail = async (req, res) => {
         });
 
         if (search != 0) {
-            res.send(search);
+            res.status(200).send(search);
         } else {
-            res.send("The user specified has no registered rentals in our database");
+            res.status(404).send(search); // No orders registered
         };
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 };
 
@@ -112,15 +118,13 @@ OrdersController.postOrder = async (req, res) => {
                 filmId: filmId,
                 totalPrice: totalPrice
             }).then(rent => {
-                res.send(`User ${user.name} has rented the film ${film.dataValues.title} until ${rent.returnDate}`);
+                res.status(201).send(`User ${user.name} has rented the film ${film.dataValues.title} until ${rent.returnDate}`);
             }).catch((error) => {
                 res.send(error);
             });
-        }).catch((error) => {
-            res.send(error);
         });        
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 };
 
@@ -138,12 +142,10 @@ OrdersController.deleteOrder = async (req, res) => {
             if (!count) {
                 return res.status(404).send({ error: 'Order not found' });
             }
-            res.send("Order deleted");
-        }).catch((error) => {
-            res.send(error);
+            res.status(204).send("Order deleted");
         });
     } catch (error) {
-        res.send(error);
+        res.status(500).send(error);
     }
 }
 
@@ -155,9 +157,7 @@ OrdersController.updateOrder = async (req, res) => {
         await Order.update(req.body, {
             where: { id: orderId }
         }).then((elem) => {
-            res.send(`The rental with id${orderId} has been edited`);
-        }).catch(error => {
-            res.send(error);
+            res.status(201).send(`The rental with id${orderId} has been edited`);
         });
     } catch (error) {
         res.send(error);
